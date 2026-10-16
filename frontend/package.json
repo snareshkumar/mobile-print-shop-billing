@@ -1,0 +1,1 @@
+{"name":"countercraft","private":true,"version":"1.0.0","type":"module","scripts":{"build":"node build.mjs","test":"node --test src/*.test.mjs"},"dependencies":{"react":"19.2.6","react-dom":"19.2.6"},"devDependencies":{"esbuild":"0.27.3"}}

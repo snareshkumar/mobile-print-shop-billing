@@ -1,0 +1,28 @@
+name: Verify billing app
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --ignore-scripts && npm test && npm run build
+        working-directory: frontend
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+      - run: gradle --no-daemon test bootJar
+        working-directory: backend
+      - run: docker compose build
+        env:
+          DB_PASSWORD: ci-build-only-password
+          MYSQL_ROOT_PASSWORD: ci-build-only-root-password
+          SHOP_PASSWORD: ci-build-only-owner-password

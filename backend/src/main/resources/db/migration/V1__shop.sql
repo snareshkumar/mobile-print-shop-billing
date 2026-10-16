@@ -1,0 +1,74 @@
+CREATE TABLE product (
+ id BIGINT PRIMARY KEY AUTO_INCREMENT,
+ sku VARCHAR(64) NOT NULL UNIQUE,
+ name VARCHAR(160) NOT NULL,
+ category VARCHAR(80) NOT NULL,
+ kind VARCHAR(16) NOT NULL,
+ cost DECIMAL(14,2) NOT NULL,
+ price DECIMAL(14,2) NOT NULL,
+ tax_rate DECIMAL(5,2) NOT NULL DEFAULT 0,
+ stock INT NOT NULL DEFAULT 0,
+ reorder_level INT NOT NULL DEFAULT 5,
+ active BOOLEAN NOT NULL DEFAULT TRUE,
+ version BIGINT NOT NULL DEFAULT 0,
+ CHECK (cost>=0 AND price>=0 AND stock>=0 AND tax_rate BETWEEN 0 AND 100),
+ CHECK (kind IN ('PRODUCT','SERVICE'))
+);
+CREATE TABLE invoice (
+ id VARCHAR(36) PRIMARY KEY,
+ number BIGINT NOT NULL AUTO_INCREMENT UNIQUE,
+ customer VARCHAR(160) NOT NULL,
+ phone VARCHAR(30) NOT NULL,
+ payment VARCHAR(16) NOT NULL,
+ status VARCHAR(16) NOT NULL DEFAULT 'DRAFT',
+ business_date DATE NULL,
+ created_at TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+ posted_at TIMESTAMP(6) NULL,
+ voided_at TIMESTAMP(6) NULL,
+ void_reason VARCHAR(255) NULL,
+ subtotal DECIMAL(14,2) NOT NULL DEFAULT 0,
+ discount DECIMAL(14,2) NOT NULL DEFAULT 0,
+ tax DECIMAL(14,2) NOT NULL DEFAULT 0,
+ total DECIMAL(14,2) NOT NULL DEFAULT 0,
+ cost DECIMAL(14,2) NOT NULL DEFAULT 0,
+ version BIGINT NOT NULL DEFAULT 0,
+ INDEX ix_invoice_date (business_date,status)
+);
+CREATE TABLE invoice_line (
+ id BIGINT PRIMARY KEY AUTO_INCREMENT,
+ invoice_id VARCHAR(36) NOT NULL,
+ product_id BIGINT NOT NULL,
+ name VARCHAR(160) NOT NULL,
+ sku VARCHAR(64) NOT NULL,
+ kind VARCHAR(16) NOT NULL,
+ quantity INT NOT NULL,
+ price DECIMAL(14,2) NOT NULL,
+ cost DECIMAL(14,2) NOT NULL,
+ discount DECIMAL(14,2) NOT NULL,
+ tax_rate DECIMAL(5,2) NOT NULL,
+ tax DECIMAL(14,2) NOT NULL,
+ total DECIMAL(14,2) NOT NULL,
+ FOREIGN KEY (invoice_id) REFERENCES invoice(id) ON DELETE CASCADE,
+ FOREIGN KEY (product_id) REFERENCES product(id)
+);
+CREATE TABLE stock_movement (
+ id BIGINT PRIMARY KEY AUTO_INCREMENT,
+ product_id BIGINT NOT NULL,
+ delta INT NOT NULL,
+ balance INT NOT NULL,
+ reason VARCHAR(512) NOT NULL,
+ invoice_id VARCHAR(36) NULL,
+ created_at TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+ FOREIGN KEY (product_id) REFERENCES product(id),
+ INDEX ix_movement (product_id,created_at)
+);
+CREATE TABLE expense (
+ id BIGINT PRIMARY KEY AUTO_INCREMENT,
+ business_date DATE NOT NULL,
+ category VARCHAR(80) NOT NULL,
+ description VARCHAR(255) NOT NULL,
+ amount DECIMAL(14,2) NOT NULL,
+ version BIGINT NOT NULL DEFAULT 0,
+ CHECK (amount > 0),
+ INDEX ix_expense_date (business_date)
+);

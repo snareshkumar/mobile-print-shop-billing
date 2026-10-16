@@ -1,0 +1,26 @@
+server:
+  port: ${PORT:8080}
+  error:
+    include-message: never
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/shop?connectionTimeZone=UTC}
+    username: ${DB_USER:shop}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 0
+      connection-timeout: 15000
+  flyway:
+    enabled: true
+  jackson:
+    time-zone: Asia/Kolkata
+  mvc:
+    problemdetails:
+      enabled: true
+shop:
+  username: ${SHOP_USERNAME:owner}
+  password: ${SHOP_PASSWORD}
+  name: ${SHOP_NAME:Naresh Mobile & Print}
+  address: ${SHOP_ADDRESS:Chennai}
+  phone: ${SHOP_PHONE:}
