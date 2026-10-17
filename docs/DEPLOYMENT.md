@@ -37,7 +37,7 @@ Use a separate preview database for preview deployments. Do not run unreviewed p
 For local Compose, create a consistent logical backup (protect the output because it contains customer details):
 
 ```bash
-docker compose exec -T db sh -c 'MYSQL_PWD="$MYSQL_PASSWORD" mysqldump --single-transaction --no-tablespaces -u shop shop' > shop-backup.sql
+docker compose exec -T db sh -c 'MYSQL_PWD="$MYSQL_PASSWORD" mysqldump --single-transaction --no-tablespaces -u "$MYSQL_USER" shop' > shop-backup.sql
 ```
 
 For hosted MySQL enable provider-managed daily backups and test restoration into a separate database. Avoid storing backups inside the application image or Git repository.
